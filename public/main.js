@@ -101,26 +101,54 @@ function renderPost() {
 // delete post function
 
 function deletePost(postId) {
-    return axios.delete(`/api/v1/post/${postId}`)
-        .then(response => {
-            console.log(response.data);
-            Swal.fire({
-                icon: 'success',
-                title: 'Post Deleted',
-                timer: 1000,
-                showConfirmButton: false
-            });
-            // If the post was deleted successfully, re-render the posts
-            renderPost();
-        })
-        .catch(error => {
-            console.log(error.data);
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to delete post',
-                showConfirmButton: false
-            })});
+    Swal.fire({
+        title: 'Enter " Confirm" to delete this post',
+        input: 'password',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        cancelButtonColor: "#212121",
+        confirmButtonText: 'Delete',
+        confirmButtonColor: "#212121",
+        showLoaderOnConfirm: true,
+        preConfirm: (password) => {
+            if (password === 'Confirm') {
+                // If the password is correct, send the DELETE request
+                return axios.delete(`/api/v1/post/${postId}`)
+                    .then(response => {
+                        console.log(response.data);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Post Deleted',
+                            timer: 1000,
+                            showConfirmButton: false
+                        });
+                        // If the post was deleted successfully, re-render the posts
+                        renderPost();
+                    })
+                    .catch(error => {
+                        console.log(error.data);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to delete post',
+                            showConfirmButton: false
+                        });
+                    });
+            } else {
+                // If the password is incorrect, display an error message
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Password',
+                    text: 'Please enter correct password',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+            }
+        }
+    });
 }
+
 
 // edit post
 
